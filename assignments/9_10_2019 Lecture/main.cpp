@@ -5,7 +5,7 @@ struct Node
 {
     int data;
     Node *next;
-    Node(int d = -1, Node *n = NULL)
+    Node(int d, Node *n = NULL)
     {
         data = d;
         next = n;
@@ -40,13 +40,14 @@ public:
     void del(int key)
     {
         Node *temp = first;
-        while (temp->next->data != key)
+        while (temp->data != key) //removed a "-> data" because it was skipping a node after loop completed
         {
             temp = temp->next;
         }
         Node *temp_del = temp->next;
-        temp = temp->next->next;
-        delete temp_del;
+        *temp = *temp->next; //added * to arguement for both instances of temp
+        delete temp_del;     //i'm assuming its because we lose the register and thats why it loops infinitley
+        cout << "this is the current node " << temp->data << endl; //added to check to make sure we were on the correct node by the end of the function
     }
 
     void print()
@@ -83,6 +84,6 @@ int main()
         myList.add(rand() % 100 + 1);
     }
     myList.print();
-    myList.del(80);
+    myList.del(84);
     myList.print();
 }
