@@ -21,6 +21,47 @@ public:
         last = NULL;
     }
 
+    void push(int ndata)
+    {
+        Node *temp;
+        temp -> data = ndata;
+        temp -> next = first;
+        first = temp;
+        
+    }
+
+    void pop()
+    {
+        Node *tempDel = first;
+        Node *temp = first -> next;
+        delete tempDel;
+        first = temp;
+        
+    }
+
+    bool find(int ndata)
+    {
+        Node *temp = first;
+        while(temp -> data != ndata)
+        {
+            temp = temp -> next;
+            if(temp -> data == ndata)
+            {
+                cout << ndata << " is in the list!" << endl;
+                return true;
+            }
+            
+            else
+            {
+                cout << "The data you are looking for does not exist." << endl;
+                return false;
+            }
+            
+           
+        }
+    }
+
+
     void add(int ndata)
     {
         if (last != NULL)
@@ -84,6 +125,10 @@ int main()
         myList.add(rand() % 100 + 1);
     }
     myList.print();
+   // myList.find(45);
+    myList.pop();
+    myList.push(64);
+    myList.find(4);
     myList.del(84);
     myList.print();
 }
