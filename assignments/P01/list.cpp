@@ -1,134 +1,179 @@
+//Kevin McNeil Jr.
 #include <iostream>
+#include <fstream>
+
 using namespace std;
 
-struct Node
+bool string_match(string big, string small)
 {
-    int data;
-    Node *next;
-    Node(int d, Node *n = NULL)
+    int index = big.find(small);
+    return index >= 0;
+}
+
+string lower_string(string orig)
+{
+    string result = "";
+    for (int i = 0; i < orig.size(); i++)
     {
-        data = d;
-        next = n;
+        result += tolower(orig[i]);
+    }
+    return result;
+}
+
+struct Employee{
+    string emp_id; 
+    string first_name;
+    string last_name;
+    string gender;
+    string email;
+    double hourly_pay;
+    Employee *next;
+
+    Employee(){
+        emp_id = "";
+        first_name = "";
+        last_name = "";
+        gender = "";
+        email = "";
+        hourly_pay = 0.0;
+    }
+
+    Employee(string id,string first,string last,string sex,string mail, double pay){
+        emp_id = id;
+        first_name = first;
+        last_name = last;
+        gender = sex;
+        email = mail;
+        hourly_pay = pay;
     }
 };
 
-class List
-{
+class LinkedList{
+private:
+    Employee* head;
+    Employee* last;
+
 public:
-    List()
-    {
-        first = NULL;
+    LinkedList(){
+        head = NULL;
         last = NULL;
     }
 
-    void push(int ndata)
-    {
-        Node *temp;
-        temp -> data = ndata;
-        temp -> next = first;
-        first = temp;
+
+    void frontSert(string id,string first,string last,string sex,string mail, double pay){
+        Employee* Temp = new Employee(id,first,last,sex,mail,pay);
+
+        if(head == NULL){
+            head = Temp;
+        }else{
+            Temp->next = head;
+            head = Temp;
+        }
         
     }
 
+    //set to remove front of list, collects 2 spots to hold onto so we dont lose our place in the list
+    //prints out to confirm what we removed.
     void pop()
     {
-        Node *tempDel = first;
-        Node *temp = first -> next;
+        Employee *tempDel = head;
+        Employee *temp = head -> next;
+        cout << "Removed: " << tempDel->emp_id << ", " <<tempDel->first_name << ", " <<tempDel->last_name << endl;
         delete tempDel;
-        first = temp;
+        head = temp;
         
     }
 
-    bool find(int ndata)
+    //adds a new Employee to front of list with given data
+    void push(string id,string first,string last,string sex,string mail, double pay)
     {
-        Node *temp = first;
-        while(temp -> data != ndata)
+        Employee *temp = new Employee(id,first,last,sex,mail,pay);
+        head = temp;
+        cout << "Added: " << temp->emp_id << ", " <<temp->first_name << ", " << temp->last_name << endl;
+        
+    }
+
+    //finds email substring and returns true if found and cout results for user
+    bool find(string emp)
+    {
+        Employee *temp = head;
+        while (temp != NULL)
         {
-            temp = temp -> next;
-            if(temp -> data == ndata)
+            if (string_match(lower_string(temp->email), lower_string(emp)))
             {
-                cout << ndata << " is in the list!" << endl;
+                cout << "Match found: " << temp->email << endl; 
                 return true;
             }
-            
             else
             {
-                cout << "The data you are looking for does not exist." << endl;
-                return false;
+                temp = temp->next;
             }
-            
-           
         }
+        cout << "No match found!" << endl;
+        return false;
     }
 
-
-    void add(int ndata)
+    //deletes select user even if substring is used and cout result
+    void del(string emp)
     {
-        if (last != NULL)
+        Employee *temp = head;
+        while (temp != NULL)
         {
-            // list is not empty, place at the end
-            last->next = new Node(ndata);
-            last = last->next;
-        }
-        else
-        {
-            // list is empty
-            first = new Node(ndata);
-            last = first;
+            if (string_match(lower_string(temp->email), lower_string(emp)))
+            {
+                cout << temp ->email  << " has been deleted!" << endl;
+                delete temp;
+                break;
+            }
+            else
+            {
+                temp = temp->next;
+            }
         }
     }
 
-    void del(int key)
-    {
-        Node *temp = first;
-        while (temp->data != key) //removed a "-> data" because it was skipping a node after loop completed
-        {
-            temp = temp->next;
-        }
-        Node *temp_del = temp->next;
-        *temp = *temp->next; //added * to arguement for both instances of temp
-        delete temp_del;     //i'm assuming its because we lose the register and thats why it loops infinitley
-        cout << "this is the current node " << temp->data << endl; //added to check to make sure we were on the correct node by the end of the function
-    }
+    void print(){
+        Employee* Temp = head;
 
-    void print()
-    {
-        Node *temp = first;
-        while (temp->next != NULL)
-        {
-            cout << temp->data << ' ';
-            temp = temp->next;
+        //created for loop to only print the 1st 30 of list, rest of list is read in main
+        for(int i = 0; i < 30; i++){
+            cout<<Temp->emp_id<<", "<<Temp->first_name<<", "<<Temp->last_name<<", "<<Temp->email<<", "<<Temp->gender<<", "<<Temp->hourly_pay << endl;
+            Temp = Temp->next;
         }
-        cout << temp->data << endl;
     }
-
-private:
-    Node *first;
-    Node *last;
 };
 
-int main()
-{
-    // Node second(91);
-    // Node first(17, &second);
+int main(){
 
-    // // default constructor
-    // Node def;
-    // cout << def.data << ' ' << def.next << endl;
+    LinkedList EmpList;
 
-    // cout << first.next->data << endl;
+    string empid;
+    string first;
+    string last;
+    string email;
+    string gender;
+    double pay;
 
-    List myList;
-    srand(42);
-    for (int i = 0; i < 10; i++)
-    {
-        myList.add(rand() % 100 + 1);
+    string line;
+    string *tokens;
+    ifstream fin("employees.dat");
+
+    //reads entire file and creates list EmpList
+    while(!fin.eof()){
+
+        fin>>empid>>first>>last>>email>>gender>>pay;
+        EmpList.frontSert(empid,first,last,email,gender,pay);
     }
-    myList.print();
-   // myList.find(45);
-    myList.pop();
-    myList.push(64);
-    myList.find(4);
-    myList.del(84);
-    myList.print();
+
+
+    //test methods to confirm they worked
+    EmpList.print();
+    EmpList.find("salon");
+    EmpList.find("asdfssafasd");
+    EmpList.del("salon");
+    EmpList.push("20", "Kevin", "McNeil", "Male", "aadf@aadf.com", 10000000.00);
+    EmpList.pop();
+    
+
+    return 0;
 }
