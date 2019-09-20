@@ -1,3 +1,4 @@
+//Kevin McNeil Jr.
 #include <iostream>
 #include <cmath>
 
