@@ -1,147 +1,228 @@
+/**
+ * File: main.cpp
+ * Aurhor: Kevin McNeil Jr
+ * Course: CMPS 1063 - Fall 2019
+ * Date: 10/8/2019
+ * Description:
+ *    Struct implementation file for our array based stack of ints read from input.
+ */
+
 #include <iostream>
 #include <fstream>
-#include <string>
 
 using namespace std;
 
-class Stack{
-private:
-    
-
-public:
+struct Stack{
     int *A;
-    int top;
-    int data;
+    int Top;
     int Size;
 
+/**
+ * Stack constructor
+ * Description:
+ *    Inits an array of ints and sets our top
+ */
     Stack(){
         Size = 10;
         A = new int [Size];
-        top = 0;
+        Top = 0;
     }
 
+/**
+ * Stack constructor
+ * Description:
+ *    Inits an array of ints to a specified size and sets our top
+ * Params:
+ *    int s : integer size
+ */
     Stack(int s){
         Size = s;
         A = new int [Size];
-        top = 0;
+        Top = 0;
     }
 
-    bool checkResize(double size, int top){
-		if(top >= .8 * size){
-            return true;
-        }else if(top <= .2 * size){
-            return true;
-        }else{
-            return false;
-        }
-        
-    }
-
-    void Enlarge(){
-        int new_size = Size * 1.5; 
-		int *A2 = new int[new_size]; 
-		for (int i = 0; i < Size; i++){
-			A2[i] = A[i];
-		}
-		int *temp = A;
-		A = A2;
-		delete[] temp;
-    }
-    
-    void Reduce(){
-        int new_size = Size * .5; 
-		int *A2 = new int[new_size]; 
-		for (int i = 0; i < Size; i++){
-			A2[i] = A[i];
-		}
-		int *temp = A;
-		A = A2;
-		delete[] temp;
-    }
-    
-    bool Empty(){
-        return top < 0;
-    }
-
-    bool Full(){
-        return (top == Size);
-        }
-
+/**
+ * Push
+ * Description:
+ *    Adds item to top of stack
+ * Params:
+ *    int val : integer size
+ * Returns:
+ *     bool : true = success
+ */
     bool Push(int val){
         if(!Full()){
-            A[top] = val;
-            top++;
+            A[Top] = val;
+            Top++;
+            A[Top] = 0;
             return true;
         }else{
             return false;
         }
-    }
+}
 
+/**
+ * Pop
+ * Description:
+ *    Removes top of stack and returns it
+ * Params:
+ *    void
+ * Returns:
+ *     int : item on stack
+ */
     int Pop(){
         if(!Empty()){
             int temp = 0;   
-            temp = A[top];
-            temp--;
+            temp = A[Top];
+            Top--;
             return temp;
         }else{
-            cout << "Cannot remove item from empty stack" << endl;
+            // should return a value that implies failure, but good enough for now
+            cout<<"Cannot remove item from empty stack"<<endl;
         }
-        return 0;
+  return 0;
+}
+
+/**
+ * Print
+ * Description:
+ *    Prints stack for inspection
+ * Params:
+ *    void
+ * Returns:
+ *     void
+ */
+    void Print(int maxSize){
+        ofstream fout;
+        fout.open("output.dat");
+        
+        fout << "Kevin McNeil Jr." << endl;
+        fout << "10/8/2019" << endl;
+        fout << "Program 2\n\n\n";
+        
+        fout << "Stack Size: " << Top << endl;
+        fout << "Largest Size: " << maxSize << endl;
+        for(int i = Top; i >= 0 ; i--){
+            fout << A[i] << " ";
+        } 
     }
 
-    void Print(int bigSize){
-        ofstream outfile; 
-        outfile.open ("output.dat");
-
-        outfile << "Kevin McNeil Jr." << endl;
-        outfile << "10/7/19" << endl;
-        outfile << "Homework 2" << endl << endl << endl;
-
-        outfile << "Final size: " << Size << endl;
-        outfile << "Biggest size: " << bigSize << endl;
-        outfile << "Values: ";
-        for (int i = top; i >= 0; i--){
-            outfile << A[i] << " ";
-        }
+/**
+ * Empty
+ * Description:
+ *    Is stack empty
+ * Params:
+ *    void
+ * Returns:
+ *    bool : true = empty
+ */
+    bool Empty(){
+        return Top < 0;
     }
 
+/**
+ * Full
+ * Description:
+ *    Is stack full
+ * Params:
+ *    void
+ * Returns:
+ *    bool : true = full
+ */
+    bool Full(){
+        return (Top == Size);
+    }
+/**
+ * Full
+ * Description:
+ *    Checks if stack is 80% full or 20% full
+ * Params:
+ *    double
+ * Returns:
+ *    top if true
+ */
+    double checkResize(){
+        double cEnlarge = .8 * (double)Size;
+        double cReduce = .2 * (double)Size;
+        
+        if(Top >= cEnlarge){
+            return Top;
+        }else if(Top <= cReduce){
+            return Top;
+        }
+        return false;
+    }
+/**
+ * Full
+ * Description:
+ *    enlarges stack
+ * Params:
+ *    void
+ * Returns:
+ *    enlarged stack with new size and old data
+ */
+    void Enlarge(){
+        if(checkResize() >= .8 * (double)Size){
+            int nSize = Size * 1.5;
+            int *A2 = new int [nSize];
+            for( int i = 0; i < Size; i++){
+                A2[i] = A[i];
+            }
+            int *tempDel = A;
+            Size = nSize;
+            A = A2;
+            delete[] tempDel;
+        }
+    }
+/**
+ * Full
+ * Description:
+ *    reduces stack 
+ * Params:
+ *    void
+ * Returns:
+ *    reduced stack with new size and old data
+ */
+    void Reduce(){
+        if(checkResize() <= .2 * (double)Size){
+            int nSize = Size * .5;
+            int *A2 = new int [nSize];
+            for( int i = 0; i < Size; i++){
+                A2[i] = A[i];
+            }
+            int *tempDel = A;
+            Size = nSize;
+            A = A2;
+            delete[] tempDel;
+        }
+    }
 };
 
-
 int main(){
-    char direction = ' ';
+    Stack s(10);
+    
+    int maxLength = 0;
+    char input = ' ';
     int data = 0;
-    int bigSize = 10;
-
-    Stack Array(10);
 
     ifstream fin;
     fin.open("input_data.txt");
-    while(!fin.eof()){
-        
 
-        fin >> direction;
+    while(!fin.eof()){
+        fin >> input;
         fin >> data;
 
-
-        if(direction == '+'){
-            Array.Push(data);
-        }else{
-            Array.Pop();
+        if(input == '+'){
+            s.Push(data);
+            s.Enlarge();
+            if(maxLength < s.Size){
+                maxLength = s.Size;
+            }
+        }else if(input == '-'){
+            s.Pop();
+            s.Reduce();
         }
-
-
-        if(Array.checkResize(Array.Size, Array.top)){
-            Array.Enlarge();
-            if(bigSize < Array.Size){
-                bigSize = Array.Size;
-                }
-        }else{
-            if(Array.checkResize(Array.Size, Array.top)){
-                Array.Reduce();
-                }    
-        } 
     }
-    Array.Print(bigSize);
+    s.Print(maxLength);
     return 0;
 }
