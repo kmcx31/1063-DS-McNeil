@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -10,83 +11,99 @@ private:
 public:
     int *A;
     int top;
-    int data;
     int Size;
-    char direction;
 
     Stack(){
-        data = 0;
         Size = 10;
         A = new int [Size];
         top = 0;
-        direction = ' ';
     }
 
     Stack(int s){
-        int data = 0;
         Size = s;
         A = new int [Size];
         top = 0;
-        direction = ' ';
     }
 
-    bool checkResize(Stack s, int size){
-        return size;
+    bool checkResize(){
+        if(top >= .8 * Size){
+            return true;
+        }else if(top <= .2 * Size){
+            return true;
+        }
+        return false;
     }
 
-    Stack Enlarge(Stack s){
-        return s;
-    }
-    
-    Stack Reduce(Stack s){
-        return s;
-    }
-
-    int popI(){
-        int temp = A[top];
-        A[top]--;
-        return temp;
-    }
-
-    char popC(){
-        char temp = A[top];
-        return temp;
-    }
-
-    void print(){
-        for(int i = top; i >= 0; i--){
-            cout << A[direction] << " " << A[top] << endl;
+    void Enlarge(){
+        if(checkResize()){
+            int new_size = Size * 1.5;
+            int *A2 = new int[new_size];
+            for(int i = 0; i < new_size ;i++){
+                A2[i] = A[i];
+            }
+            int *temp = A;
+            A = A2;
+            delete[] temp;
         }
     }
+    
+    void Reduce(){
+        if(checkResize() && Size > 10){
+            int new_size = Size * .5;
+            int *A2 = new int[new_size];
+            for(int i = 0; i < new_size ;i++){
+                A2[i] = A[i];
+            }
+            int *temp = A;
+            A = A2;
+            delete[] temp;
+        }
+    }
+    
+    void push(int val){
+        A[top] = val;
+        top++;
+    }
+
+    int pop(){
+        int temp = A[top];
+        top--;
+        return temp;
+    }
+
+    void Print(){
+        for(int i = top; i>=0; i--){
+        cout << A[i] << endl;
+  }
+}
 };
 
 
 
 int main(){
-    Stack Array;
+    Stack Array(10);
 
+    //cout << "This is the current size: " << Array.Size;
     ifstream fin;
     fin.open("input_data.txt");
     
-    int i = 0;
     while(!fin.eof()){
-        fin >> Array.direction;
-        fin >> Array.top;
-        
-        //cout << Array.direction << " " << Array.top << endl;
-        Array.top++;
-        i++;
-    }
-
-    Array.print();
-
-    /*for(int i = Array.top; i >= 0; i--){
-        if(Array.direction == '-'){
-            Array.popC();
-            Array.popI();
-            cout << Array.direction << " " << Array.top << endl; 
+        char direction = ' ';
+        int i = 0;
+        fin >> direction;
+        fin >> i;
+        if(direction == '+'){
+            Array.push(i);
+            cout << i << endl;
+            Array.Enlarge();
+            cout << "This is the current size: " << Array.Size << endl;
+        }else{
+            Array.pop();
+            Array.Reduce();
+            cout << "This is the current size: " << Array.Size << endl;
         }
-    }*/
-
+    }
+    cout << "This is the final Array size " << Array.Size;
+    Array.Print();
 return 0;
 }
