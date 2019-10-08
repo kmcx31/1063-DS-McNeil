@@ -94,7 +94,7 @@ struct Stack{
  */
     void Print(int maxSize){
         ofstream fout;
-        fout.open("output.dat");
+        fout.open("stack_out.dat");
         
         fout << "Kevin McNeil Jr." << endl;
         fout << "10/8/2019" << endl;
