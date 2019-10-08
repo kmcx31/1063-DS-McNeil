@@ -5,27 +5,28 @@ using namespace std;
 
 class Stack{
 private:
+    
 
 public:
     int *A;
     int top;
-    int Size;
     int data;
+    int Size;
     char direction;
 
     Stack(){
+        data = 0;
         Size = 10;
         A = new int [Size];
         top = 0;
-        data = 0;
         direction = ' ';
     }
 
     Stack(int s){
+        int data = 0;
         Size = s;
         A = new int [Size];
         top = 0;
-        data = 0;
         direction = ' ';
     }
 
@@ -40,36 +41,52 @@ public:
     Stack Reduce(Stack s){
         return s;
     }
+
+    int popI(){
+        int temp = A[top];
+        A[top]--;
+        return temp;
+    }
+
+    char popC(){
+        char temp = A[top];
+        return temp;
+    }
+
+    void print(){
+        for(int i = top; i >= 0; i--){
+            cout << A[direction] << " " << A[top] << endl;
+        }
+    }
 };
 
 
 
 int main(){
-    Stack S[10];
+    Stack Array;
 
     ifstream fin;
     fin.open("input_data.txt");
     
-    int count = 0;
-
+    int i = 0;
     while(!fin.eof()){
-        fin >> S[count].direction;
-        fin >> S[count].data;
-        S.top;
+        fin >> Array.direction;
+        fin >> Array.top;
         
-        if(S[count].direction == '-'){
-            delete S[count].direction;
-            delete S[count].data;
+        //cout << Array.direction << " " << Array.top << endl;
+        Array.top++;
+        i++;
+    }
+
+    Array.print();
+
+    /*for(int i = Array.top; i >= 0; i--){
+        if(Array.direction == '-'){
+            Array.popC();
+            Array.popI();
+            cout << Array.direction << " " << Array.top << endl; 
         }
-
-
-
-        cout << S[count].direction;
-        cout << S[count].data << endl;
-        S.top--;
-        count++;
-    }  
-
+    }*/
 
 return 0;
 }
